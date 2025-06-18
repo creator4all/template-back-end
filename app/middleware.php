@@ -14,7 +14,7 @@ return function (App $app) {
 
     $app->add(new JwtAuthentication([
         "path" => ["/perfil"], // rotas protegidas
-        "ignore" => ["/login", "/register"],
+        "ignore" => ["/login", "/register", "/"],
         "secret" => $settings['jwt']['secret'],
         "attribute" => "token",
         "error" => function (Response $response, array $arguments) {

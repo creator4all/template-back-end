@@ -10,6 +10,11 @@ use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
     $container = $app->getContainer();
+
+    $app->get('/', function ($request, $response) {
+        $response->getBody()->write('API is running!');
+        return $response;
+    });
     
     // Rotas de documentação Swagger
     $app->get('/docs', SwaggerController::class . ':ui');
@@ -17,7 +22,7 @@ return function (App $app) {
     $app->group('/api', function (Group $group) use ($container) {
         // Rota para documentação OpenAPI JSON
         $group->get('/documentation', SwaggerController::class . ':documentation');
-        
+
         // Rotas de autenticação
         $group->post('/register', AuthController::class . ':register')
             ->add(new ValidateSchemaMiddleware(

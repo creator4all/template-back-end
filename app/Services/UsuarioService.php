@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 use App\Repositories\UsuarioRepository;
+use Slim\Psr7\Response;
 
 final class UsuarioService{
     private UsuarioRepository $UsuarioRepository;
@@ -8,14 +9,26 @@ final class UsuarioService{
     public function __construct(UsuarioRepository $UsuarioRepository){
         $this->UsuarioRepository = $UsuarioRepository;
     }
-    public function CadastrarUsuario(array $dados){
+    public function CadastrarUsuario(array $dados): Response
+    {
         if($this->UsuarioRepository->emailExiste($dados['email'])){
             throw new \Exception("Email já cadastrado");
         }
 
         $dados['senha'] = password_hash($dados['senha'], PASSWORD_DEFAULT);
 
-        return $this->UsuarioRepository->criar($dados);
+        if($this->UsuarioRepository->criar($dados)){
+            $response = new Response();
+            $response->getBody()->write(json_encode([
+                'status' => 'sucesso',
+                'mensagem' => 'Usuário registrado com sucesso'
+            ]));
+            return $response
+                ->withHeader('Content-Type', 'application/json')
+                ->withStatus(200);
+        } else {
+            throw new \Exception("Erro ao registrar usuário");
+        }
     }
 
     public function login(array $dados){

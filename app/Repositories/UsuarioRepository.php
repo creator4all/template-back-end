@@ -9,7 +9,7 @@ class UsuarioRepository
         return Users::where('email', $email)->exists();
     }
 
-    public function criar(array $dados): Users | bool
+    public function criar(array $dados): Users
     {
         return Users::create($dados);
     }
