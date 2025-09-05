@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\DTO\UsersDTO\;
+use App\Utils\JsonResponse;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -10,14 +12,21 @@ use OpenApi\Annotations as OA;
 
 class AuthController{
 
-    private $service;
+    private UsuarioService $service;
 
     public function __construct(UsuarioService $service){
         $this->service = $service;
     }
 
     public function register(Request $request, Response $response) {
-        return $this->service->CadastrarUsuario($request->getParsedBody());
+
+        $dto = new UsersDTO
+        (
+            $request->getParsedBody()['nome'],
+            $request->getParsedBody()['email'],
+            $request->getParsedBody()['senha']
+        );
+        return JsonResponse::from($this->service->CadastrarUsuario($dto));
     }
 
 

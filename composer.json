@@ -17,7 +17,7 @@
         }
     ],
     "require": {
-        "php": ">=7.1",
+        "php": ">=7.4",
         "ext-json": "*",
         "doctrine/annotations": "^2.0",
         "illuminate/database": "^12.18",
