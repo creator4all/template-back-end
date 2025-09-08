@@ -1,5 +1,6 @@
 <?php
 namespace App\Services;
+use App\DTO\UsersDTO;
 use App\Repositories\UsuarioRepository;
 use Slim\Psr7\Response;
 
@@ -9,34 +10,31 @@ final class UsuarioService{
     public function __construct(UsuarioRepository $UsuarioRepository){
         $this->UsuarioRepository = $UsuarioRepository;
     }
-    public function CadastrarUsuario(array $dados): Response
+    public function CadastrarUsuario(UsersDTO $dto): array
     {
-        if($this->UsuarioRepository->emailExiste($dados['email'])){
+        if($this->UsuarioRepository->emailExiste($dto['email'])){
             throw new \Exception("Email já cadastrado");
         }
 
-        $dados['senha'] = password_hash($dados['senha'], PASSWORD_DEFAULT);
+        $dto['senha'] = password_hash($dto['senha'], PASSWORD_DEFAULT);
 
-        if($this->UsuarioRepository->criar($dados)){
-            $response = new Response();
-            $response->getBody()->write(json_encode([
-                'status' => 'sucesso',
-                'mensagem' => 'Usuário registrado com sucesso'
-            ]));
-            return $response
-                ->withHeader('Content-Type', 'application/json')
-                ->withStatus(200);
+        $user = $this->UsuarioRepository->criar($dto->toEntity());
+        if($user){
+
+            return ["dados" => UsersDTO::fromEntity($user)];
+
         } else {
             throw new \Exception("Erro ao registrar usuário");
         }
     }
 
-    public function login(array $dados){
-        $usuario = $this->UsuarioRepository->findByEmail($dados['email']);
-        if(!$usuario || !password_verify($dados['senha'], $usuario->senha)){
+    public function login(UsersDTO $dto)
+    {
+        $usuario = $this->UsuarioRepository->findByEmail($dto->toEntity());
+        if(!$usuario || !password_verify($dto->getSenha(), $usuario->getSenha())){
             throw new \Exception("Email ou senha inválidos");
         }
 
-        return $usuario;
+        return ["dados" => UsersDTO::fromEntity($usuario)];
     }
 }

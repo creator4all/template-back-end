@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\DTO\UsersDTO\;
+use App\DTO\UsersDTO;
 use App\Utils\JsonResponse;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -22,6 +22,7 @@ class AuthController{
 
         $dto = new UsersDTO
         (
+            $request->getParsedBody()['id'],
             $request->getParsedBody()['nome'],
             $request->getParsedBody()['email'],
             $request->getParsedBody()['senha']
@@ -29,8 +30,15 @@ class AuthController{
         return JsonResponse::from($this->service->CadastrarUsuario($dto));
     }
 
-
     public function login(Request $request, Response $response): Response {
-        return $this->service->login($request->getParsedBody());
+        $body = $request->getParsedBody();
+        $dto = new UsersDTO
+        (
+            null,
+            null,
+            $body['email'],
+            $body['senha']
+        );
+        return JsonResponse::from($this->service->login($dto));
     }
 }

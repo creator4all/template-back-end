@@ -1,16 +1,15 @@
 <?php
 
-namespace App\DTO;
+namespace App\Entities;
+use App\Models\Users;
 
-use App\Entities\UsersEntity;
-
-
-class UsersDTO
+class UsersEntity
 {
     private ?int $id;
     private ?string $nome;
     private ?string $email;
     private ?string $senha;
+
 
 
     public function __construct(?int $id, ?string $nome, ?string $email, ?string $senha)
@@ -19,27 +18,23 @@ class UsersDTO
         $this->nome = $nome;
         $this->email = $email;
         $this->senha = $senha;
+
     }
 
-    public static function fromEntity(UsersEntity $entity): self
+    public function toArray(): array
     {
-        return new self(
-            $entity -> getId(),
-            $entity -> getNome(),
-            $entity -> getEmail(),
-            $entity -> getSenha()
-        );
+        return ['id' => $this -> id, 'nome' => $this -> nome, 'email' => $this -> email, 'senha' => $this -> senha];
     }
 
-    public function toEntity(): UsersEntity
+    public static function fromModel(Users $model): self
     {
-        return new UsersEntity($this -> id, $this -> nome, $this -> email, $this ->senha);
+        return new self($model -> id, $model -> nome, $model -> email, $model -> senha);
     }
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
-    public function setId(?int $id): void
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
@@ -53,19 +48,22 @@ class UsersDTO
     }
     public function getSenha(): string
     {
-        return $this->senha;
+        return $this -> senha;
     }
-    public function setSenha(string $senha): void
-    {
-        $this->senha = $senha;
-    }
+
     public function setNome(string $nome): void
     {
-        $this->nome = $nome;
+        $this -> nome = $nome;
     }
+
     public function setEmail(string $email): void
     {
         $this->email = $email;
+    }
+
+    public function setSenha(string $senha): void
+    {
+        $this->senha = $senha;
     }
 
 }

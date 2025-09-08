@@ -1,22 +1,25 @@
 <?php
 namespace App\Repositories;
+use App\Entities\UsersEntity;
 use App\Models\Users;
 
 class UsuarioRepository
 {
-    public function emailExiste(string $email): bool
+    public function emailExiste(UsersEntity $entity): bool
     {
-        return Users::where('email', $email)->exists();
+        return Users::where('email', $entity->getEmail())->exists();
     }
 
-    public function criar(array $dados): Users
+    public function criar(UsersEntity $entity): UsersEntity
     {
-        return Users::create($dados);
+        $user = Users::create($entity->toArray());
+        return UsersEntity::fromModel($user);
     }
 
-    public function findByEmail(string $email): ?Users
+    public function findByEmail(UsersEntity $entity): ?UsersEntity
     {
-        return Users::where('email', $email)->first();
+        $user = Users::where('email', $entity->getEmail())->first();
+        return UsersEntity::fromModel($user);
     }
 
 }
